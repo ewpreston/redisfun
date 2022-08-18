@@ -1,8 +1,17 @@
+import os
+
 import redis
 
 redis = redis.Redis(
-    host='localhost',
-    port='6379')
+    host=os.getenv('REDIS_HOST'),
+    port=os.getenv('REDIS_PORT'),
+    password=os.getenv('REDIS_PASS'))
+
+
+def print_numbers(numbers):
+    for num in numbers:
+        print(num.decode())
+
 
 redis.delete('numbers')
 redis.delete('vehicles')
@@ -15,7 +24,8 @@ print(vehicles)
 for i in range(0, 100):
     redis.zadd('numbers', {i + 1: i})
 
-numbers = redis.zrange('numbers', 0, -1)
-print(numbers)
+print("Order they were added:")
+print_numbers(redis.zrange('numbers', 0, -1))
 
-print(redis.zrevrange('numbers', 0, -1))
+print("Reverse order:")
+print_numbers(redis.zrevrange('numbers', 0, -1))
